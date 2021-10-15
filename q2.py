@@ -65,7 +65,7 @@ class Maze:
 
     # Print maze with walls and explored nodes marked
     def print_explored(self) -> None:
-        print(f"Explored: •  Maze Wall: █")
+        print(f"Explored: •  Maze Wall: █\n")
         for y in range(len(self.maze)):
             for x in range(len(self.maze)):
                 if (y, x) in self.closed_queue:
@@ -75,6 +75,7 @@ class Maze:
                 else:
                     print(" ", end="")
             print()
+        print("\n")
 
     # Breadth First Search, Depth First Search
     def search(self, method: str, start_pos: tuple, end_pos: tuple) -> None:
@@ -102,7 +103,6 @@ class Maze:
             # Check current node for goal
             if curr == end_pos:
                 print(f"Found goal after exploring {len(self.closed_queue)} nodes.\n")
-                print(f"Closed queue:\n{self.closed_queue}\n")
                 return
 
             # Expand curr, add adjacent nodes to open_queue
@@ -119,27 +119,44 @@ class Maze:
 
 
 if __name__ == "__main__":
+    m = Maze()
+    sep = "-" * 80
+
     # c.1: Agent starts at S, ends at E1
     start_pos = (11, 2)
     end_pos = (19, 23)
-    print(f"\n\nc.1 - start, S: {start_pos}, end, E1: {end_pos}\n")
+    print(f"{sep}\nc.1 - start: {start_pos}, end: {end_pos}\n{sep}")
 
-    m = Maze()
-    m.bfs_search(start_pos, end_pos)
+    print("Breadth First Search:\n")
+    m.search("bfs", start_pos, end_pos)
+    m.print_explored()
+
+    print("Depth First Search:\n")
+    m.search("bfs", start_pos, end_pos)
     m.print_explored()
 
     # c.2: Agent starts at S, ends at E2
     start_pos = (11, 2)
     end_pos = (21, 2)
-    print(f"\n\nc.2 - start, S: {start_pos}, end, E2: {end_pos}\n")
+    print(f"{sep}\nc.2 - start: {start_pos}, end: {end_pos}\n{sep}")
 
-    m.bfs_search(start_pos, end_pos)
+    print("Breadth First Search:\n")
+    m.search("bfs", start_pos, end_pos)
+    m.print_explored()
+
+    print("Depth First Search:\n")
+    m.search("dfs", start_pos, end_pos)
     m.print_explored()
 
     # c.3: Agent starts at (0,0), ends at (24,24)
     start_pos = (0, 0)
     end_pos = (24, 24)
-    print(f"\n\nc.3 - start: {start_pos}, end: {end_pos}\n")
+    print(f"{sep}\nc.3 - start: {start_pos}, end: {end_pos}\n{sep}")
 
-    m.bfs_search(start_pos, end_pos)
+    print("Breadth First Search:\n")
+    m.search("bfs", start_pos, end_pos)
+    m.print_explored()
+
+    print("Depth First Search:\n")
+    m.search("dfs", start_pos, end_pos)
     m.print_explored()
