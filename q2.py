@@ -63,6 +63,7 @@ class Maze:
         for row in self.maze:
             print(row)
 
+    # Print maze with walls and explored nodes marked
     def print_explored(self) -> None:
         print(f"Explored: •  Maze Wall: █")
         for y in range(len(self.maze)):
@@ -75,8 +76,8 @@ class Maze:
                     print(" ", end="")
             print()
 
-    # Breadth First Search
-    def bfs_search(self, start_pos: tuple, end_pos: tuple):
+    # Breadth First Search, Depth First Search
+    def search(self, method: str, start_pos: tuple, end_pos: tuple) -> None:
         # Reset queues
         self.open_queue = []
         self.closed_queue = []
@@ -86,13 +87,16 @@ class Maze:
         self.open_queue.append(start_pos)
         self.expanded[start_pos[0]][start_pos[1]] = True
 
-        # Start searching
+        # Start search
         curr = start_pos
         while len(self.open_queue) != 0:
             # print(self.open_queue)
 
-            # Add node to closed queue
-            curr = self.open_queue.pop(0)
+            # Add current node to closed queue
+            if method == "bfs":
+                curr = self.open_queue.pop(0)
+            elif method == "dfs":
+                curr = self.open_queue.pop()
             self.closed_queue.append(curr)
 
             # Check current node for goal
