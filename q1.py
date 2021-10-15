@@ -5,13 +5,13 @@ class CityMap:
     def __init__(self):
         self.city_dict = {}
 
-    def add_city(self, city: int, adj_city: int, dist: int):
+    def add_city(self, city: int, adj_city: int, dist: int) -> None:
         if city not in self.city_dict:
             self.city_dict[city] = [(adj_city, dist)]
         else:
             self.city_dict[city].append((adj_city, dist))
 
-    def show_cities(self):
+    def show_cities(self) -> None:
         print("City\t| Adj Cities: (Name, Dist)")
         print("----\t| ------------------------")
         for city in self.city_dict:
@@ -19,6 +19,28 @@ class CityMap:
             for city_tup in self.city_dict[city]:
                 print(f" ({city_tup[0]}, {city_tup[1]}),\t", sep="", end="")
             print("")
+
+    def find_ucs_path(self, start: int, goal: int):
+        fringe = []
+        total_dist = 0
+        curr = start
+
+        fringe.append(curr)
+
+        while curr is not goal:
+            # Remove from fringe
+            fringe.pop(0)
+
+            # Sort adjacent cities in order of ascending distance
+            adj_cities = self.city_dict[curr]
+            adj_cities.sort(key=lambda tup: tup[1])
+
+            for city_tup in adj_cities:
+                fringe.append(adj_cities[0])
+
+            curr = fringe(0)
+
+        return
 
 
 if __name__ == "__main__":
