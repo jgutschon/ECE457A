@@ -124,7 +124,7 @@ class Maze:
             # Add current node to closed queue
             self.closed_queue.append(curr)
 
-            # Check current node for goal
+            # Check current node for goal, print solution
             if curr == end_pos:
                 print(f"Found goal after exploring {len(self.closed_queue)} nodes.")
                 print(f"Final path:\n{self.__find_path()}\n")
@@ -143,7 +143,7 @@ class Maze:
         print(f"Goal not found after exloring {len(self.closed_queue)} nodes.\n")
 
     # Manhattan distance heuristic
-    def __h(self, curr_pos: tuple, end_pos: tuple) -> int:
+    def __hstar(self, curr_pos: tuple, end_pos: tuple) -> int:
         dist = abs(curr_pos[0] - end_pos[0]) + abs(curr_pos[1] - end_pos[1])
         return dist
 
@@ -162,7 +162,8 @@ class Maze:
         while len(self.open_queue) != 0:
             # print(self.open_queue)
 
-            curr = self.open_queue.pop()  # LIFO
+            # curr = self.open_queue.pop()  # LIFO
+            # f = self.search("bfs", start_pos, end_pos)
 
             # Add current node to closed queue
             self.closed_queue.append(curr)
