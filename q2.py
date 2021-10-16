@@ -50,7 +50,7 @@ class Maze:
         # Track parents to generate path
         self.parents = {}
 
-    def _isValid(self, y: int, x: int) -> bool:
+    def __isValid(self, y: int, x: int) -> bool:
         # check bounds
         if y < 0 or x < 0 or y > len(self.expanded) - 1 or x > len(self.expanded) - 1:
             return False
@@ -66,7 +66,7 @@ class Maze:
         return True
 
     # Print maze with explored nodes and solution path
-    def _print_explored(self) -> None:
+    def __print_explored(self) -> None:
         print(f"Maze Wall: █\nExplored: •\nSolution Path: ○\n")
         for y in range(len(self.maze)):
             for x in range(len(self.maze)):
@@ -74,7 +74,7 @@ class Maze:
                     print("S", end="")
                 elif (y, x) == self.closed_queue[-1]:
                     print("E", end="")
-                elif (y, x) in self._find_path():
+                elif (y, x) in self.__find_path():
                     print("○", end="")
                 elif (y, x) in self.closed_queue:
                     print("•", end="")
@@ -86,7 +86,7 @@ class Maze:
         print("\n")
 
     # Backtrack through parent nodes for solution path
-    def _find_path(self) -> list:
+    def __find_path(self) -> list:
         start_pos = self.closed_queue[0]
         end_pos = self.closed_queue[-1]
 
@@ -127,15 +127,15 @@ class Maze:
             # Check current node for goal
             if curr == end_pos:
                 print(f"Found goal after exploring {len(self.closed_queue)} nodes.")
-                print(f"Final path:\n{self._find_path()}\n")
-                self._print_explored()
+                print(f"Final path:\n{self.__find_path()}\n")
+                self.__print_explored()
                 return
 
             # Expand curr, add adjacent nodes to open_queue
             for i in range(len(x_dirs)):
                 y = curr[0] + y_dirs[i]
                 x = curr[1] + x_dirs[i]
-                if self._isValid(y, x):
+                if self.__isValid(y, x):
                     self.parents[(y, x)] = curr
                     self.open_queue.append((y, x))
                     self.expanded[y][x] = True
@@ -143,7 +143,7 @@ class Maze:
         print(f"Goal not found after exloring {len(self.closed_queue)} nodes.\n")
 
     # Manhattan distance heuristic
-    def _h(self, curr_pos: tuple, end_pos: tuple) -> int:
+    def __h(self, curr_pos: tuple, end_pos: tuple) -> int:
         dist = abs(curr_pos[0] - end_pos[0]) + abs(curr_pos[1] - end_pos[1])
         return dist
 
@@ -170,15 +170,15 @@ class Maze:
             # Check current node for goal
             if curr == end_pos:
                 print(f"Found goal after exploring {len(self.closed_queue)} nodes.")
-                print(f"Final path:\n{self._find_path()}\n")
-                self._print_explored()
+                print(f"Final path:\n{self.__find_path()}\n")
+                self.__print_explored()
                 return
 
             # Expand curr, add adjacent nodes to open_queue
             for i in range(len(x_dirs)):
                 y = curr[0] + y_dirs[i]
                 x = curr[1] + x_dirs[i]
-                if self._isValid(y, x):
+                if self.__isValid(y, x):
                     self.parents[(y, x)] = curr
                     self.open_queue.append((y, x))
                     self.expanded[y][x] = True
