@@ -68,13 +68,16 @@ class Maze:
     # Print maze with explored nodes and solution path
     def __print_explored(self) -> None:
         print(f"Maze Wall: █\nExplored: •\nSolution Path: ○\n")
+        start = self.closed_queue[0]
+        end = self.closed_queue[-1]
+
         for y in range(len(self.maze)):
             for x in range(len(self.maze)):
-                if (y, x) == self.closed_queue[0]:
+                if (y, x) == start:
                     print("S", end="")
-                elif (y, x) == self.closed_queue[-1]:
+                elif (y, x) == end:
                     print("E", end="")
-                elif (y, x) in self.__find_path():
+                elif (y, x) in self.__find_path(start, end):
                     print("○", end="")
                 elif (y, x) in self.closed_queue:
                     print("•", end="")
@@ -86,19 +89,16 @@ class Maze:
         print("\n")
 
     # Backtrack through parent nodes for solution path
-    def __find_path(self) -> list:
-        start_pos = self.closed_queue[0]
-        end_pos = self.closed_queue[-1]
-
-        node = end_pos
-        path = [node]
-        while node != start_pos:
+    def __find_path(self, start: tuple, end: tuple) -> list:
+        path = [end]
+        node = end
+        while node != start:
             node = self.parents[node]
             path.insert(0, node)
         return path
 
     # Breadth First Search, Depth First Search
-    def search(self, method: str, start_pos: tuple, end_pos: tuple) -> None:
+    def blind_search(self, method: str, start: tuple, end: tuple) -> None:
         # Reset queues
         self.open_queue = []
         self.closed_queue = []
@@ -106,8 +106,8 @@ class Maze:
         self.parents = {}
 
         # Add starting position to open_queue, mark as expanded
-        self.open_queue.append(start_pos)
-        self.expanded[start_pos[0]][start_pos[1]] = True
+        self.open_queue.append(start)
+        self.expanded[start[0]][start[1]] = True
 
         # Start search
         while len(self.open_queue) != 0:
@@ -125,9 +125,9 @@ class Maze:
             self.closed_queue.append(curr)
 
             # Check current node for goal, print solution
-            if curr == end_pos:
+            if curr == end:
                 print(f"Found goal after exploring {len(self.closed_queue)} nodes.")
-                print(f"Final path:\n{self.__find_path()}\n")
+                print(f"Final path:\n{self.__find_path(start, end)}\n")
                 self.__print_explored()
                 return
 
@@ -135,54 +135,66 @@ class Maze:
             for i in range(len(x_dirs)):
                 y = curr[0] + y_dirs[i]
                 x = curr[1] + x_dirs[i]
+
                 if self.__isValid(y, x):
+                    # Record parents, mark as expanded
                     self.parents[(y, x)] = curr
-                    self.open_queue.append((y, x))
                     self.expanded[y][x] = True
+
+                    # Add to open_queue
+                    self.open_queue.append((y, x))
 
         print(f"Goal not found after exloring {len(self.closed_queue)} nodes.\n")
 
     # Manhattan distance heuristic
-    def __hstar(self, curr_pos: tuple, end_pos: tuple) -> int:
-        dist = abs(curr_pos[0] - end_pos[0]) + abs(curr_pos[1] - end_pos[1])
+    def __h(self, curr: tuple, end: tuple) -> int:
+        dist = abs(curr[0] - end[0]) + abs(curr[1] - end[1])
         return dist
 
-    def astar_search(self, start_pos: tuple, end_pos: tuple) -> None:
+    def astar_search(self, start: tuple, goal: tuple) -> None:
         # Reset queues
-        self.open_queue = []
+        self.open_queue = {}
         self.closed_queue = []
         self.expanded = [[False for i in range(25)] for j in range(25)]
         self.parents = {}
 
         # Add starting position to open_queue, mark as expanded
-        self.open_queue.append(start_pos)
-        self.expanded[start_pos[0]][start_pos[1]] = True
+        self.open_queue[start] = 0
+        self.expanded[start[0]][start[1]] = True
 
         # Start search
         while len(self.open_queue) != 0:
             # print(self.open_queue)
 
-            # curr = self.open_queue.pop()  # LIFO
-            # f = self.search("bfs", start_pos, end_pos)
+            # Choose node with minimum f value
+            curr = min(self.open_queue, key=self.open_queue.get)
+            self.open_queue.pop(curr)
 
             # Add current node to closed queue
             self.closed_queue.append(curr)
 
             # Check current node for goal
-            if curr == end_pos:
+            if curr == goal:
                 print(f"Found goal after exploring {len(self.closed_queue)} nodes.")
-                print(f"Final path:\n{self.__find_path()}\n")
+                print(f"Final path:\n{self.__find_path(start, goal)}\n")
                 self.__print_explored()
                 return
 
-            # Expand curr, add adjacent nodes to open_queue
+            # Expand curr, examine adjacent nodes
             for i in range(len(x_dirs)):
                 y = curr[0] + y_dirs[i]
                 x = curr[1] + x_dirs[i]
+
                 if self.__isValid(y, x):
+                    # Record parents, mark as expanded
                     self.parents[(y, x)] = curr
-                    self.open_queue.append((y, x))
                     self.expanded[y][x] = True
+
+                    # Evaluation function: f = g + h
+                    f = len(self.__find_path(start, (y, x))) + self.__h((y, x), goal)
+
+                    # Add to open_queue with f value
+                    self.open_queue[(y, x)] = f
 
         print(f"Goal not found after exloring {len(self.closed_queue)} nodes.\n")
 
@@ -191,35 +203,22 @@ if __name__ == "__main__":
     m = Maze()
     sep = "-" * 80
 
-    # c.1: Agent starts at S, ends at E1
-    start_pos = (11, 2)
-    end_pos = (19, 23)
-    print(f"{sep}\nc.1 - start: {start_pos}, end: {end_pos}\n{sep}")
+    coords = [
+        {"start": (11, 2), "end": (19, 23)},
+        {"start": (11, 2), "end": (21, 2)},
+        {"start": (0, 0), "end": (24, 24)},
+    ]
 
-    print("Breadth First Search:\n")
-    m.search("bfs", start_pos, end_pos)
+    for i in range(len(coords)):
+        start = coords[i]["start"]
+        end = coords[i]["end"]
+        print(f"{sep}\nc.{i+1} - start: {start}, end: {end}\n{sep}")
 
-    print("Depth First Search:\n")
-    m.search("dfs", start_pos, end_pos)
+        # print("Breadth First Search:\n")
+        # m.blind_search("bfs", start, end)
 
-    # c.2: Agent starts at S, ends at E2
-    start_pos = (11, 2)
-    end_pos = (21, 2)
-    print(f"{sep}\nc.2 - start: {start_pos}, end: {end_pos}\n{sep}")
+        # print("Depth First Search:\n")
+        # m.blind_search("dfs", start, end)
 
-    print("Breadth First Search:\n")
-    m.search("bfs", start_pos, end_pos)
-
-    print("Depth First Search:\n")
-    m.search("dfs", start_pos, end_pos)
-
-    # c.3: Agent starts at (0,0), ends at (24,24)
-    start_pos = (0, 0)
-    end_pos = (24, 24)
-    print(f"{sep}\nc.3 - start: {start_pos}, end: {end_pos}\n{sep}")
-
-    print("Breadth First Search:\n")
-    m.search("bfs", start_pos, end_pos)
-
-    print("Depth First Search:\n")
-    m.search("dfs", start_pos, end_pos)
+        print("A* Search\n")
+        m.astar_search(start, end)
