@@ -1,9 +1,6 @@
 #!/usr/bin/python3
 
 # Search directions
-from typing import Pattern
-
-
 y_dirs = (1, 0, -1, 0)
 x_dirs = (0, 1, 0, -1)
 
@@ -214,11 +211,11 @@ if __name__ == "__main__":
         end = coords[i]["end"]
         print(f"{sep}\nc.{i+1} - start: {start}, end: {end}\n{sep}")
 
-        # print("Breadth First Search:\n")
-        # m.blind_search("bfs", start, end)
+        print("Breadth First Search:\n")
+        m.blind_search("bfs", start, end)
 
-        # print("Depth First Search:\n")
-        # m.blind_search("dfs", start, end)
+        print("Depth First Search:\n")
+        m.blind_search("dfs", start, end)
 
         print("A* Search\n")
         m.astar_search(start, end)
