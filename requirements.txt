@@ -3,3 +3,5 @@ matplotlib
 pyqt5
 scipy
 seaborn
+
+black
