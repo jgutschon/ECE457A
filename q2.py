@@ -47,7 +47,7 @@ class Maze:
         # Track parents to generate path
         self.parents = {}
 
-    def __isValid(self, y: int, x: int) -> bool:
+    def __is_valid(self, y: int, x: int) -> bool:
         # check bounds
         if y < 0 or x < 0 or y > len(self.expanded) - 1 or x > len(self.expanded) - 1:
             return False
@@ -94,8 +94,8 @@ class Maze:
             path.insert(0, node)
         return path
 
-    # Breadth First Search, Depth First Search
-    def blind_search(self, method: str, start: tuple, end: tuple) -> None:
+    # Blind Search - Breadth First Search & Depth First Search
+    def blind_search(self, method: str, start: tuple, goal: tuple) -> None:
         # Reset queues
         self.open_queue = []
         self.closed_queue = []
@@ -108,8 +108,7 @@ class Maze:
 
         # Start search
         while len(self.open_queue) != 0:
-            # print(self.open_queue)
-
+            # Check blind search method
             if method == "bfs":
                 curr = self.open_queue.pop(0)  # FIFO
             elif method == "dfs":
@@ -122,9 +121,10 @@ class Maze:
             self.closed_queue.append(curr)
 
             # Check current node for goal, print solution
-            if curr == end:
-                print(f"Found goal after exploring {len(self.closed_queue)} nodes.")
-                print(f"Final path:\n{self.__find_path(start, end)}\n")
+            if curr == goal:
+                print(f"Found goal after exploring {len(self.closed_queue)} nodes.\n")
+                print(f"Path Cost: {len(self.__find_path(start, goal))}")
+                print(f"Final path:\n{self.__find_path(start, goal)}\n")
                 self.__print_explored()
                 return
 
@@ -133,7 +133,7 @@ class Maze:
                 y = curr[0] + y_dirs[i]
                 x = curr[1] + x_dirs[i]
 
-                if self.__isValid(y, x):
+                if self.__is_valid(y, x):
                     # Record parents, mark as expanded
                     self.parents[(y, x)] = curr
                     self.expanded[y][x] = True
@@ -144,10 +144,11 @@ class Maze:
         print(f"Goal not found after exloring {len(self.closed_queue)} nodes.\n")
 
     # Manhattan distance heuristic
-    def __h(self, curr: tuple, end: tuple) -> int:
-        dist = abs(curr[0] - end[0]) + abs(curr[1] - end[1])
+    def __h(self, curr: tuple, goal: tuple) -> int:
+        dist = abs(curr[0] - goal[0]) + abs(curr[1] - goal[1])
         return dist
 
+    # Informed Search - A*
     def astar_search(self, start: tuple, goal: tuple) -> None:
         # Reset queues
         self.open_queue = {}
@@ -172,7 +173,8 @@ class Maze:
 
             # Check current node for goal
             if curr == goal:
-                print(f"Found goal after exploring {len(self.closed_queue)} nodes.")
+                print(f"Found goal after exploring {len(self.closed_queue)} nodes.\n")
+                print(f"Path Cost: {len(self.__find_path(start, goal))}")
                 print(f"Final path:\n{self.__find_path(start, goal)}\n")
                 self.__print_explored()
                 return
@@ -182,7 +184,7 @@ class Maze:
                 y = curr[0] + y_dirs[i]
                 x = curr[1] + x_dirs[i]
 
-                if self.__isValid(y, x):
+                if self.__is_valid(y, x):
                     # Record parents, mark as expanded
                     self.parents[(y, x)] = curr
                     self.expanded[y][x] = True
